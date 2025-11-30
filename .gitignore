@@ -35,9 +35,6 @@ jangular/data/
 
 # Java/Spring Boot
 jangular/target/
-jangular/.mvn/
-jangular/mvnw
-jangular/mvnw.cmd
 *.class
 
 # Angular/Node
