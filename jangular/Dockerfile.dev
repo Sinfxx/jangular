@@ -1,0 +1,31 @@
+####################################
+# Development stage — Ubuntu + Maven + JDK 25
+####################################
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /opt
+
+# Install tools
+RUN apt-get update && \
+    apt-get install -y wget tar unzip curl zip maven ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download Amazon Corretto 25 (arm64 compatible)
+RUN wget -O corretto25.tar.gz https://corretto.aws/downloads/latest/amazon-corretto-25-aarch64-linux-jdk.tar.gz && \
+    tar -xzf corretto25.tar.gz && \
+    mv amazon-corretto-25* /opt/jdk25
+
+ENV JAVA_HOME=/opt/jdk25
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Verify Java
+RUN java -version
+
+WORKDIR /app
+
+# Expose Spring Boot dev port
+EXPOSE 8080
+
+# Run with Spring Boot Maven plugin for hot reload
+ENTRYPOINT ["./mvnw", "spring-boot:run"]

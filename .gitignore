@@ -1,0 +1,46 @@
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Claude
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Archives
+*.zip
+jangular.zip
+
+# Environment files with secrets (never commit these!)
+.env
+.env.local
+.env.*.local
+
+# Database runtime data (NEVER commit - use init scripts instead!)
+jangular/data/
+**/data/postgres/
+**/data/keycloak/
+
+# Java/Spring Boot
+jangular/target/
+jangular/.mvn/
+jangular/mvnw
+jangular/mvnw.cmd
+*.class
+
+# Angular/Node
+angular-keycloak-oidc/node_modules/
+angular-keycloak-oidc/dist/
+angular-keycloak-oidc/.angular/

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.angular/
+.vscode/
+.claude/
+*.log
+*.tmp
+README.md
+.git
+.gitignore

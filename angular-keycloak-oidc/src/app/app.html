@@ -1,0 +1,40 @@
+<!-- Show login component if not authenticated -->
+<app-login *ngIf="!(auth.isAuthenticated$ | async) && !auth.isLoggedIn()"></app-login>
+
+<!-- Show main content if authenticated -->
+<div *ngIf="(auth.isAuthenticated$ | async) || auth.isLoggedIn()" class="main-container">
+  <header>
+    <h1>{{ title() }}</h1>
+    <div class="user-info">
+      <span *ngIf="auth.identityClaims">
+        Welcome, {{ auth.identityClaims['preferred_username'] || auth.identityClaims['name'] || 'User' }}!
+      </span>
+      <button (click)="auth.logout()" class="logout-btn">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>Test API Call</h2>
+      <p>Click the button below to test calling your protected backend API</p>
+      <button (click)="callApi()" class="api-btn">Call API</button>
+
+      <div *ngIf="apiResult()" class="result">
+        <h3>API Response:</h3>
+        <pre>{{ apiResult() | json }}</pre>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>User Claims</h2>
+      <pre *ngIf="auth.identityClaims">{{ auth.identityClaims | json }}</pre>
+    </div>
+
+    <div class="card">
+      <h2>Access Token</h2>
+      <div class="token-display">
+        <code>{{ auth.accessToken }}</code>
+      </div>
+    </div>
+  </main>
+</div>

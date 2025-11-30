@@ -1,0 +1,102 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:18
+    container_name: jangular-postgres
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: myappdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./jangular/data/postgres:/var/lib/postgresql
+      - ./jangular/init-db:/docker-entrypoint-initdb.d
+    networks:
+      - jangular-network
+
+  # Keycloak Authentication Server
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.0
+    container_name: jangular-keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_USERNAME: myuser
+      KC_DB_PASSWORD: secret
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: keycloakdb
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: 8080
+      KC_HOSTNAME_URL: http://localhost:8080
+      KC_HOSTNAME_ADMIN_URL: http://localhost:8080
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_RELATIVE_PATH: /
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./jangular/data/keycloak:/opt/keycloak/data
+    depends_on:
+      - postgres
+    networks:
+      - jangular-network
+
+  # Spring Boot Backend API (internal only)
+  backend:
+    build:
+      context: ./jangular
+      dockerfile: Dockerfile.dev
+    container_name: jangular-backend
+    environment:
+      DB_HOST: postgres
+      KEYCLOAK_ISSUER: http://localhost:8080/realms/jangular
+      KEYCLOAK_JWK_URI: http://keycloak:8080/realms/jangular/protocol/openid-connect/certs
+      SPRING_PROFILES_ACTIVE: dev
+    volumes:
+      - ./jangular/src:/app/src
+      - ./jangular/pom.xml:/app/pom.xml
+      - ./jangular/.mvn:/app/.mvn
+      - ./jangular/mvnw:/app/mvnw
+      - ./jangular/mvnw.cmd:/app/mvnw.cmd
+      - maven-cache:/root/.m2
+    depends_on:
+      - postgres
+      - keycloak
+    networks:
+      - jangular-network
+    ports:
+      - "8081:8080"
+
+  # Angular Frontend
+  frontend:
+    build:
+      context: ./angular-keycloak-oidc
+      dockerfile: Dockerfile.dev
+    container_name: jangular-frontend
+    volumes:
+      - ./angular-keycloak-oidc/src:/app/src
+      - ./angular-keycloak-oidc/public:/app/public
+      - ./angular-keycloak-oidc/angular.json:/app/angular.json
+      - ./angular-keycloak-oidc/tsconfig.json:/app/tsconfig.json
+      - ./angular-keycloak-oidc/tsconfig.app.json:/app/tsconfig.app.json
+      - ./angular-keycloak-oidc/package.json:/app/package.json
+      - ./angular-keycloak-oidc/package-lock.json:/app/package-lock.json
+      - /app/node_modules
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+      - keycloak
+    networks:
+      - jangular-network
+
+networks:
+  jangular-network:
+    driver: bridge
+
+volumes:
+  maven-cache:
