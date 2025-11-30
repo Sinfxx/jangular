@@ -18,7 +18,7 @@
   "accessCodeLifespanLogin": 1800,
   "clients": [
     {
-      "clientId": "angular-app",
+      "clientId": "jangular",
       "name": "Angular Frontend Application",
       "description": "OIDC client for Angular frontend",
       "enabled": true,
