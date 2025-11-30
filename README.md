@@ -41,10 +41,16 @@ This single command will:
 ### 3. Access the applications
 
 - **Frontend**: http://localhost:4200
-- **Backend API**: http://localhost:8080
-- **Keycloak Admin**: http://localhost:8081
-  - Username: `admin`
-  - Password: `admin`
+- **Backend API**: http://localhost:8081
+- **Keycloak Admin**: http://localhost:8080
+  - Admin Username: `admin`
+  - Admin Password: `admin`
+
+### 4. Login to the application
+
+Use one of the pre-configured test users:
+- **Test User**: `testuser` / `test123`
+- **Admin User**: `admin` / `admin123`
 
 ## Development Workflow
 
@@ -139,15 +145,31 @@ docker exec -it jangular-postgres psql -U myuser -d myappdb
 
 ## Keycloak Setup
 
-### Initial Configuration
+### Automatic Configuration ✨
 
-1. Access Keycloak admin console: http://localhost:8081
-2. Login with admin/admin
-3. Create a new realm called `jangular`
-4. Configure client for the Angular application
-5. Create test users
+**No manual setup required!** The Keycloak realm is automatically imported on first startup.
 
-(Document your specific Keycloak configuration here)
+When you run `docker-compose up`, Keycloak will:
+- Create the `jangular` realm
+- Configure the `angular-app` OIDC client
+- Create test users with roles
+
+### Test Users
+
+The following users are pre-configured for development:
+
+| Username | Password | Roles | Use Case |
+|----------|----------|-------|----------|
+| `testuser` | `test123` | user | Standard user testing |
+| `admin` | `admin123` | admin, user | Admin functionality testing |
+
+### Keycloak Admin Access
+
+- **URL**: http://localhost:8080
+- **Admin Username**: `admin`
+- **Admin Password**: `admin`
+
+Use the admin console to modify realm settings, add users, or configure additional clients.
 
 ## Project Structure
 
@@ -237,7 +259,7 @@ Keycloak takes ~60 seconds to start. The backend waits for Keycloak to be health
 
 ```bash
 # Check Keycloak health
-curl http://localhost:8081/health/ready
+curl http://localhost:8080/health/ready
 ```
 
 ### Frontend not loading
@@ -265,7 +287,7 @@ docker-compose up --build
 
 1. **Docker files**: `Dockerfile`, `docker-compose.yml`, `.dockerignore`
 2. **Init scripts**: SQL files in `jangular/init-db/` (database setup)
-3. **Keycloak config**: `keycloak-config/myapp-realm.json` (realm configuration)
+3. **Keycloak config**: `keycloak-config/jangular-realm.json` (realm configuration)
 4. **Configuration**: `application.properties`, `nginx.conf`, `.env.example`
 5. **Source code**: All application code
 
@@ -300,15 +322,24 @@ docker-compose down
 docker-compose up --build
 ```
 
-### Sharing Keycloak changes
+### Sharing Keycloak Changes
 
 After modifying Keycloak configuration (new clients, users, roles):
 
 ```bash
+# Export the current realm configuration
 ./keycloak-export.sh
-git add keycloak-config/myapp-realm.json
+
+# Commit and push the changes
+git add keycloak-config/jangular-realm.json
 git commit -m "Update Keycloak realm configuration"
 git push
+```
+
+Team members will automatically get the updated configuration on their next:
+```bash
+docker-compose down -v
+docker-compose up --build
 ```
 
 ## Production Deployment
