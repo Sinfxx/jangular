@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class TodoControler {
+public class HelloController {
 
     @GetMapping("/api/v1/hello")
     @PreAuthorize("isAuthenticated()")
