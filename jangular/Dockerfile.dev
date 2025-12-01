@@ -11,8 +11,15 @@ RUN apt-get update && \
     apt-get install -y wget tar unzip curl zip maven ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Download Amazon Corretto 25 (arm64 compatible)
-RUN wget -O corretto25.tar.gz https://corretto.aws/downloads/latest/amazon-corretto-25-aarch64-linux-jdk.tar.gz && \
+# Install Amazon Corretto 25 based on architecture
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        wget -O corretto25.tar.gz https://corretto.aws/downloads/latest/amazon-corretto-25-x64-linux-jdk.tar.gz; \
+    elif [ "$TARGETARCH" = "arm64" ]; then \
+        wget -O corretto25.tar.gz https://corretto.aws/downloads/latest/amazon-corretto-25-aarch64-linux-jdk.tar.gz; \
+    else \
+        echo "Unsupported architecture: $TARGETARCH" && exit 1; \
+    fi && \
     tar -xzf corretto25.tar.gz && \
     mv amazon-corretto-25* /opt/jdk25
 

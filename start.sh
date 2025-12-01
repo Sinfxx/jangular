@@ -4,7 +4,7 @@ echo "🚀 Starting JAngular Full Stack Application..."
 echo ""
 echo "This will start:"
 echo "  - PostgreSQL Database (port 5432)"
-echo "  - Keycloak Auth Server (port 8081)"
+echo "  - Keycloak Auth Server (port 8080)"
 echo "  - Spring Boot Backend (port 8080)"
 echo "  - Angular Frontend (port 4200)"
 echo ""
@@ -23,7 +23,15 @@ fi
 
 echo "✅ Docker is running"
 echo ""
-echo "Building and starting services..."
+
+# Ensure Keycloak temporary transaction directory exists
+echo "🔧 Preparing Keycloak temporary transaction store..."
+mkdir -p /tmp/tx-object-store
+chmod 777 /tmp/tx-object-store
+echo "✅ /tmp/tx-object-store ready"
+echo ""
+
+echo "📦 Building and starting services..."
 echo "(This may take a few minutes on first run)"
 echo ""
 
