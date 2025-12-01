@@ -28,7 +28,7 @@ cd jangular
 ### 2. Start the entire stack
 
 ```bash
-docker-compose up --build
+bash start.sh
 ```
 
 This single command will:
@@ -53,26 +53,6 @@ Use one of the pre-configured test users:
 - **Admin User**: `admin` / `admin123`
 
 ## Development Workflow
-
-### First time setup
-
-```bash
-# Build and start all services
-docker-compose up --build
-```
-
-### Subsequent runs
-
-```bash
-# Start services (uses cached images)
-docker-compose up
-```
-
-### Stop services (keeps data)
-
-```bash
-docker-compose down
-```
 
 ### Fresh start (removes all data)
 
@@ -203,83 +183,6 @@ The application uses environment variables for configuration:
 
 **Frontend**:
 - Configure Keycloak URLs in `src/app/app.config.ts`
-
-### Switching between Docker and Local Development
-
-The configuration supports both Docker and local development:
-
-**Docker mode**:
-```bash
-docker-compose up
-```
-
-**Local mode** (if you want to run services locally):
-```bash
-# Start only database and keycloak
-docker-compose up postgres keycloak
-
-# Run backend locally
-cd jangular
-./mvnw spring-boot:run
-
-# Run frontend locally
-cd angular-keycloak-oidc
-npm install
-npm start
-```
-
-## Troubleshooting
-
-### Port already in use
-
-If you get port conflict errors:
-```bash
-# Check what's using the port
-lsof -i :8080  # or :4200, :5432, :8081
-
-# Stop the conflicting service or change ports in docker-compose.yml
-```
-
-### Database connection errors
-
-```bash
-# Check if postgres is healthy
-docker-compose ps
-
-# View postgres logs
-docker-compose logs postgres
-
-# Restart services
-docker-compose restart
-```
-
-### Keycloak not ready
-
-Keycloak takes ~60 seconds to start. The backend waits for Keycloak to be healthy before starting.
-
-```bash
-# Check Keycloak health
-curl http://localhost:8080/health/ready
-```
-
-### Frontend not loading
-
-```bash
-# Check build logs
-docker-compose logs frontend
-
-# Rebuild frontend
-docker-compose up --build frontend
-```
-
-### Clean slate
-
-```bash
-# Remove everything and start fresh
-docker-compose down -v
-docker system prune -f
-docker-compose up --build
-```
 
 ## Team Collaboration
 
